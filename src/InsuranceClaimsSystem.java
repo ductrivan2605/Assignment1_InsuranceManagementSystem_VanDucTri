@@ -36,6 +36,15 @@ public class InsuranceClaimsSystem {
                     viewAllClaims(claimProcessManager);
                     break;
                 case 3:
+                    updateClaim(claimProcessManager);
+                    break;
+                case 4:
+                    deleteClaim(claimProcessManager);
+                    break;
+                case 5:
+                    getSingleClaim(claimProcessManager);
+                    break;
+                case 6:
                     exit = true;
                     break;
                 default:
@@ -124,10 +133,124 @@ public class InsuranceClaimsSystem {
             System.out.println(claim.id + " - " + claim.status);
         }
     }
+    private static void updateClaim(ClaimProcessManager claimProcessManager) {
+        System.out.print("Enter the ID of the claim to update: ");
+        String claimId = scanner.nextLine();
+        Claim existingClaim = claimProcessManager.getOne(claimId);
+        if (existingClaim != null) {
+            System.out.println("Enter new details for the claim (leave blank to keep existing):");
+
+            // Update claim date
+            System.out.print("New claim date (DD-MM-YYYY): ");
+            String newClaimDateStr = scanner.nextLine();
+            Date newClaimDate = newClaimDateStr.isEmpty() ? existingClaim.getClaimDate() : parseDate(newClaimDateStr);
+
+            // Update insured person
+            System.out.print("New insured person: ");
+            String newInsuredPerson = scanner.nextLine();
+            if (newInsuredPerson.isEmpty()) {
+                newInsuredPerson = existingClaim.getInsuredPerson();
+            }
+
+            // Update card number
+            System.out.print("New card number: ");
+            String newCardNumber = scanner.nextLine();
+            if (newCardNumber.isEmpty()) {
+                newCardNumber = existingClaim.getCardNumber();
+            }
+
+            // Update exam date
+            System.out.print("New exam date (DD-MM-YYYY): ");
+            String newExamDateStr = scanner.nextLine();
+            Date newExamDate = newExamDateStr.isEmpty() ? existingClaim.getExamDate() : parseDate(newExamDateStr);
+
+            // Update documents (if any)
+            List<String> newDocuments = new ArrayList<>();
+            boolean addMoreDocuments = true;
+            while (addMoreDocuments) {
+                System.out.print("Enter new document name (Enter 'done' to finish adding documents): ");
+                String newDocumentName = scanner.nextLine();
+                if (newDocumentName.equalsIgnoreCase("done")) {
+                    addMoreDocuments = false;
+                } else {
+                    newDocuments.add(newDocumentName);
+                }
+            }
+
+            // Update claim amount
+            System.out.print("New claim amount: ");
+            String newClaimAmountStr = scanner.nextLine();
+            double newClaimAmount = newClaimAmountStr.isEmpty() ? existingClaim.getClaimAmount() : Double.parseDouble(newClaimAmountStr);
+
+            // Update status
+            System.out.print("New status (New, Processing, Done): ");
+            String newStatus = scanner.nextLine();
+            if (newStatus.isEmpty()) {
+                newStatus = existingClaim.getStatus();
+            }
+
+            // Update receiver banking information
+            System.out.println("Enter new receiver banking information:");
+            System.out.print("New bank: ");
+            String newBank = scanner.nextLine();
+            if (newBank.isEmpty()) {
+                newBank = existingClaim.getReceiverBank();
+            }
+
+            System.out.print("New receiver Name: ");
+            String newReceiverName = scanner.nextLine();
+            if (newReceiverName.isEmpty()) {
+                newReceiverName = existingClaim.getReceiverName();
+            }
+
+            System.out.print("New receiver Number: ");
+            String newReceiverNumber = scanner.nextLine();
+            if (newReceiverNumber.isEmpty()) {
+                newReceiverNumber = existingClaim.getReceiverNumber();
+            }
+
+            // Create the updated claim object
+            Claim updatedClaim = new Claim(claimId, newClaimDate, newInsuredPerson, newCardNumber, newExamDate, newDocuments, newClaimAmount, newStatus, newBank, newReceiverName, newReceiverNumber);
+
+            // Update the claim
+            claimProcessManager.update(updatedClaim);
+            System.out.println("Claim with ID " + claimId + " updated successfully.");
+        } else {
+            System.out.println("Claim with ID " + claimId + " not found.");
+        }
+    }
+
+
+
+    private static void deleteClaim(ClaimProcessManager claimProcessManager) {
+        System.out.print("Enter the ID of the claim to delete: ");
+        String claimId = scanner.nextLine();
+        Claim existingClaim = claimProcessManager.getOne(claimId);
+        if (existingClaim != null) {
+            claimProcessManager.delete(claimId);
+            System.out.println("Claim with ID " + claimId + " deleted successfully.");
+        } else {
+            System.out.println("Claim with ID " + claimId + " not found.");
+        }
+    }
+
+    private static void getSingleClaim(ClaimProcessManager claimProcessManager) {
+        System.out.print("Enter the ID of the claim to retrieve: ");
+        String claimId = scanner.nextLine();
+        Claim claim = claimProcessManager.getOne(claimId);
+        if (claim != null) {
+            // Display the details of the retrieved claim
+            System.out.println("Claim ID: " + claim.getId());
+            System.out.println("Claim Status: " + claim.getStatus());
+            // Display other claim details as needed
+        } else {
+            System.out.println("Claim with ID " + claimId + " not found.");
+        }
+    }
     public static List<Customer> readCustomersFromFile(String filename) {
         List<Customer> customers = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            // Implement logic to read customers from file
+            // Read customers from file
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + filename);
         } catch (IOException e) {
@@ -151,7 +274,7 @@ public class InsuranceClaimsSystem {
 
     public static void writeClaimsToFile(String filename, List<Claim> claims) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            // Implement logic to write claims to file
+            // write claims to file
         } catch (IOException e) {
             System.err.println("Error writing file: " + e.getMessage());
         }

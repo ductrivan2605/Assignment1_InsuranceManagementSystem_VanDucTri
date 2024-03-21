@@ -4,14 +4,14 @@ import java.util.List;
 
 public class Claim {
 //    A Claim contains id, claim date, insured person, card number, exam date, list of documents, claim amount, status and receiver banking info
-    String id;
+    public String id;
     Date claimDate;
     String insuredPerson;
     String cardNumber;
     Date examDate;
     List<String> documents;
     double claimAmount;
-    String status;
+    public String status;
     String receiverBank;
     String receiverName;
     String receiverNumber;

@@ -1,3 +1,6 @@
+/**
+ * @author <Van Duc Tri - s3978223>
+ */
 package entities;
 import java.util.List;
 

@@ -1,3 +1,6 @@
+/**
+ * @author <Van Duc Tri - s3978223>
+ */
 import ClaimProcessManager.ClaimProcessManagerImpl;
 import ClaimProcessManager.ClaimProcessManager;
 import entities.Claim;

@@ -1,7 +1,10 @@
+/**
+ * @author <Van Duc Tri - s3978223>
+ */
 package entities;
 import java.util.Date;
 public class InsuranceCard{
-    private String cardNumber;
+    String cardNumber;
     String cardHolder;
     String policyOwner;
     Date expirationDate;

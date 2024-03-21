@@ -33,9 +33,12 @@ public class Customer {
 //    Setters for Customer class
 
     public void setId(String id) {
-        this.id = id;
+        if (id.matches("C-\\d{7}")) {
+            this.id = id;
+        } else {
+            throw new IllegalArgumentException("Invalid customer ID format. Format should be 'c-numbers' with 7 digits.");
+        }
     }
-
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }

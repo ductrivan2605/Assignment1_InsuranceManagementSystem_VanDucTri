@@ -35,9 +35,12 @@ public class Claim {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id.matches("F-\\d{10}")) {
+            this.id = id;
+        } else {
+            throw new IllegalArgumentException("Invalid claim ID format. Format should be 'F-numbers' with 10 digits.");
+        }
     }
-
     public Date getClaimDate() {
         return claimDate;
     }

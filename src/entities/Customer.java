@@ -3,10 +3,10 @@ import java.util.List;
 
 public class Customer {
 // Every Customer has an ID, name, unique insurance card and list of claims
-    String id;
-    String fullName;
-    InsuranceCard insuranceCard;
-    List<Claim> claims;
+    private String id;
+    private String fullName;
+    private InsuranceCard insuranceCard;
+    private List<Claim> claims;
 //    Constructor
     public Customer(String id, String fullName, InsuranceCard insuranceCard, List<Claim> claims) {
         this.id = id;

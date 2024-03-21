@@ -8,10 +8,11 @@ import java.util.*;
 
 public class InsuranceClaimsSystem {
     private static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         // Initialize system with sample data from files
-        List<Customer> customers = readCustomersFromFile("customers.txt");
-        List<Claim> claims = readClaimsFromFile("claims.txt");
+        List<Customer> customers = readCustomersFromFile("data/customers.txt");
+        List<Claim> claims = readClaimsFromFile("data/claims.txt");
 
         // Initialize ClaimProcessManager
         ClaimProcessManager claimProcessManager = new ClaimProcessManagerImpl();
@@ -36,25 +37,16 @@ public class InsuranceClaimsSystem {
                     viewAllClaims(claimProcessManager);
                     break;
                 case 3:
-                    updateClaim(claimProcessManager);
-                    break;
-                case 4:
-                    deleteClaim(claimProcessManager);
-                    break;
-                case 5:
-                    getSingleClaim(claimProcessManager);
-                    break;
-                case 6:
                     exit = true;
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
-
         // Update files before exiting
-        writeClaimsToFile("claims.txt", claims);
+        writeClaimsToFile("data/claims.txt", claimProcessManager.getAll());
     }
+
     private static Date parseDate(String dateStr) {
         try {
             String[] parts = dateStr.split("-");
@@ -126,6 +118,7 @@ public class InsuranceClaimsSystem {
 
         System.out.println("New claim added successfully.");
     }
+
     private static void viewAllClaims(ClaimProcessManager claimProcessManager) {
         System.out.println("All claims:");
         List<Claim> allClaims = claimProcessManager.getAll();
@@ -133,124 +126,17 @@ public class InsuranceClaimsSystem {
             System.out.println(claim.id + " - " + claim.status);
         }
     }
-    private static void updateClaim(ClaimProcessManager claimProcessManager) {
-        System.out.print("Enter the ID of the claim to update: ");
-        String claimId = scanner.nextLine();
-        Claim existingClaim = claimProcessManager.getOne(claimId);
-        if (existingClaim != null) {
-            System.out.println("Enter new details for the claim (leave blank to keep existing):");
-
-            // Update claim date
-            System.out.print("New claim date (DD-MM-YYYY): ");
-            String newClaimDateStr = scanner.nextLine();
-            Date newClaimDate = newClaimDateStr.isEmpty() ? existingClaim.getClaimDate() : parseDate(newClaimDateStr);
-
-            // Update insured person
-            System.out.print("New insured person: ");
-            String newInsuredPerson = scanner.nextLine();
-            if (newInsuredPerson.isEmpty()) {
-                newInsuredPerson = existingClaim.getInsuredPerson();
-            }
-
-            // Update card number
-            System.out.print("New card number: ");
-            String newCardNumber = scanner.nextLine();
-            if (newCardNumber.isEmpty()) {
-                newCardNumber = existingClaim.getCardNumber();
-            }
-
-            // Update exam date
-            System.out.print("New exam date (DD-MM-YYYY): ");
-            String newExamDateStr = scanner.nextLine();
-            Date newExamDate = newExamDateStr.isEmpty() ? existingClaim.getExamDate() : parseDate(newExamDateStr);
-
-            // Update documents (if any)
-            List<String> newDocuments = new ArrayList<>();
-            boolean addMoreDocuments = true;
-            while (addMoreDocuments) {
-                System.out.print("Enter new document name (Enter 'done' to finish adding documents): ");
-                String newDocumentName = scanner.nextLine();
-                if (newDocumentName.equalsIgnoreCase("done")) {
-                    addMoreDocuments = false;
-                } else {
-                    newDocuments.add(newDocumentName);
-                }
-            }
-
-            // Update claim amount
-            System.out.print("New claim amount: ");
-            String newClaimAmountStr = scanner.nextLine();
-            double newClaimAmount = newClaimAmountStr.isEmpty() ? existingClaim.getClaimAmount() : Double.parseDouble(newClaimAmountStr);
-
-            // Update status
-            System.out.print("New status (New, Processing, Done): ");
-            String newStatus = scanner.nextLine();
-            if (newStatus.isEmpty()) {
-                newStatus = existingClaim.getStatus();
-            }
-
-            // Update receiver banking information
-            System.out.println("Enter new receiver banking information:");
-            System.out.print("New bank: ");
-            String newBank = scanner.nextLine();
-            if (newBank.isEmpty()) {
-                newBank = existingClaim.getReceiverBank();
-            }
-
-            System.out.print("New receiver Name: ");
-            String newReceiverName = scanner.nextLine();
-            if (newReceiverName.isEmpty()) {
-                newReceiverName = existingClaim.getReceiverName();
-            }
-
-            System.out.print("New receiver Number: ");
-            String newReceiverNumber = scanner.nextLine();
-            if (newReceiverNumber.isEmpty()) {
-                newReceiverNumber = existingClaim.getReceiverNumber();
-            }
-
-            // Create the updated claim object
-            Claim updatedClaim = new Claim(claimId, newClaimDate, newInsuredPerson, newCardNumber, newExamDate, newDocuments, newClaimAmount, newStatus, newBank, newReceiverName, newReceiverNumber);
-
-            // Update the claim
-            claimProcessManager.update(updatedClaim);
-            System.out.println("Claim with ID " + claimId + " updated successfully.");
-        } else {
-            System.out.println("Claim with ID " + claimId + " not found.");
-        }
-    }
-
-
-
-    private static void deleteClaim(ClaimProcessManager claimProcessManager) {
-        System.out.print("Enter the ID of the claim to delete: ");
-        String claimId = scanner.nextLine();
-        Claim existingClaim = claimProcessManager.getOne(claimId);
-        if (existingClaim != null) {
-            claimProcessManager.delete(claimId);
-            System.out.println("Claim with ID " + claimId + " deleted successfully.");
-        } else {
-            System.out.println("Claim with ID " + claimId + " not found.");
-        }
-    }
-
-    private static void getSingleClaim(ClaimProcessManager claimProcessManager) {
-        System.out.print("Enter the ID of the claim to retrieve: ");
-        String claimId = scanner.nextLine();
-        Claim claim = claimProcessManager.getOne(claimId);
-        if (claim != null) {
-            // Display the details of the retrieved claim
-            System.out.println("Claim ID: " + claim.getId());
-            System.out.println("Claim Status: " + claim.getStatus());
-            // Display other claim details as needed
-        } else {
-            System.out.println("Claim with ID " + claimId + " not found.");
-        }
-    }
     public static List<Customer> readCustomersFromFile(String filename) {
         List<Customer> customers = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            // Read customers from file
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                String id = parts[0];
+                String fullName = parts[1] + " " + parts[2]; // Full name may consists of first name and last name
+                // Create Customer object and add to list
+                customers.add(new Customer(id, fullName, null, null));
+            }
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + filename);
         } catch (IOException e) {
@@ -258,12 +144,28 @@ public class InsuranceClaimsSystem {
         }
         return customers;
     }
-
-    // Sample method to read claims from file
     public static List<Claim> readClaimsFromFile(String filename) {
         List<Claim> claims = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            // Implement logic to read claims from file
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                String id = parts[0];
+                Date claimDate = parseDate(parts[1]);
+                String insuredPerson = parts[2];
+                String cardNumber = parts[3];
+                Date examDate = parseDate(parts[4]);
+                List<String> documents = new ArrayList<>();
+                for (int i = 5; i < parts.length - 4; i++) {
+                    documents.add(parts[i]);
+                }
+                double claimAmount = Double.parseDouble(parts[parts.length - 4]);
+                String status = parts[parts.length - 3];
+                String bank = parts[parts.length - 2];
+                String receiverName = parts[parts.length - 1];
+                String receiverNumber = parts[parts.length];
+                claims.add(new Claim(id, claimDate, insuredPerson, cardNumber, examDate, documents, claimAmount, status, bank, receiverName, receiverNumber));
+            }
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + filename);
         } catch (IOException e) {
@@ -274,7 +176,14 @@ public class InsuranceClaimsSystem {
 
     public static void writeClaimsToFile(String filename, List<Claim> claims) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            // write claims to file
+            for (Claim claim : claims) {
+                writer.write(claim.getId() + " " + claim.getClaimDate() + " " + claim.getInsuredPerson() + " " + claim.getCardNumber() + " " + claim.getExamDate());
+                for (String document : claim.getDocuments()) {
+                    writer.write(" " + document);
+                }
+                writer.write(" " + claim.getClaimAmount() + " " + claim.getStatus() + " " + claim.getReceiverBank() + " " + claim.getReceiverName() + " " + claim.getReceiverNumber());
+                writer.newLine();
+            }
         } catch (IOException e) {
             System.err.println("Error writing file: " + e.getMessage());
         }

@@ -44,5 +44,8 @@ public class InsuranceCard{
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
-
+    @Override
+    public String toString(){
+        return "Card number: " + cardNumber + "\n" + "Holder: " + cardHolder + "\n" + "Policy Owner: " + policyOwner + "\n" + "Expiration Date: " + expirationDate;
+    }
 }

@@ -31,4 +31,24 @@ public class Customer {
         return claims;
     }
 //    Setters for Customer class
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setInsuranceCard(InsuranceCard insuranceCard) {
+        this.insuranceCard = insuranceCard;
+    }
+
+    public void setClaims(List<Claim> claims) {
+        this.claims = claims;
+    }
+    @Override
+    public String toString() {
+        return "ID: " + id + "\n" + "Full Name: " + fullName + "\n" + "Insurance Card: " + insuranceCard + "\n" + "Claims: " + claims.size();
+    }
 }

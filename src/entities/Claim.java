@@ -117,4 +117,8 @@ public class Claim {
     public void setReceiverNumber(String receiverNumber) {
         this.receiverNumber = receiverNumber;
     }
+    @Override
+    public String toString() {
+        return "ID: " + id + "\n" + "Claim Date: " + claimDate + "\n" + "Insured Person: " + insuredPerson + "\n" + "Card Number: " + cardNumber + "\n" + "Exam Date: " + examDate + "\n" + "Documents: " + documents + "\n" + "Claim Amount: " + claimAmount + "\n" + "Status: " + status + "\n" + "Receiver Bank: " + receiverBank + "\n" + "Receiver Name: " + receiverName + "\n" + "Receiver Number: " + receiverNumber;
+    }
 }

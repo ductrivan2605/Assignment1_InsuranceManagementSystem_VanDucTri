@@ -10,11 +10,11 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final List<Customer> customers = new ArrayList<>();
 
     public static void main(String[] args) {
         // Initialize system with sample data from files
-        List<Customer> customers = readCustomersFromFile("data/customers.txt");
         List<Claim> claims = readClaimsFromFile("data/claims.txt");
 
         // Initialize ClaimProcessManager
@@ -37,14 +37,19 @@ public class Main {
             System.out.println("10. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
+            scanner.nextLine();
+            // CLI's User choices
             switch (choice) {
                 case 1:
                     addNewClaim(claimProcessManager);
                     break;
                 case 2:
                     viewAllClaims(claimProcessManager);
+                    try {
+                        Thread.sleep(25000); // Delay for 25 seconds
+                    } catch (InterruptedException e) {
+                        throw new IllegalArgumentException("System Error");
+                    }
                     break;
                 case 3:
                     updateClaim(claimProcessManager);
@@ -56,16 +61,30 @@ public class Main {
                     getSingleClaim(claimProcessManager);
                     break;
                 case 6:
-                    exit = true;
+                    addCustomer();
                     break;
                 case 7:
-                    exit = true;
+                    deleteCustomer();
                     break;
                 case 8:
-                    exit = true;
+                    System.out.print("Enter customer ID: ");
+                    String id = scanner.nextLine();
+                    Customer customerById = findCustomerById(id);
+                    if (customerById != null) {
+                        System.out.println(customerById);
+                    } else {
+                        System.out.println("Customer with ID " + id + " not found.");
+                    }
                     break;
                 case 9:
-                    exit = true;
+                    System.out.print("Enter customer name: ");
+                    String name = scanner.nextLine();
+                    Customer customerByName = findCustomerByName(name);
+                    if (customerByName != null) {
+                        System.out.println(customerByName);
+                    } else {
+                        System.out.println("Customer with name " + name + " not found.");
+                    }
                     break;
                 case 10:
                     exit = true;
@@ -76,6 +95,7 @@ public class Main {
         }
         // Update files before exiting
         writeClaimsToFile("data/claims.txt", claimProcessManager.getAll());
+        writeCustomersToFile("data/customers.dat");
     }
 
     public static Date parseDate(String dateStr) {
@@ -92,6 +112,7 @@ public class Main {
             throw new IllegalArgumentException("Invalid date format. Please enter date in DD-MM-YYYY format.");
         }
     }
+    // Method that let user add a new claim
     private static void addNewClaim(ClaimProcessManager claimProcessManager) {
         System.out.println("Adding a new claim...");
 
@@ -150,6 +171,7 @@ public class Main {
 
         System.out.println("New claim added successfully.");
     }
+//    Method that let user view all Claims stored in the database
     private static void viewAllClaims(ClaimProcessManager claimProcessManager) {
         System.out.println("All claims:");
         List<Claim> allClaims = claimProcessManager.getAll();
@@ -157,6 +179,7 @@ public class Main {
             System.out.println(claim.id + " - " + claim.status);
         }
     }
+//    Method that let user update a Claim that available in the database and will notify user if that claim hasnt existed yet
     private static void updateClaim(ClaimProcessManager claimProcessManager) {
         System.out.print("Enter the ID of the claim to update: ");
         String claimId = scanner.nextLine();
@@ -243,6 +266,7 @@ public class Main {
             System.out.println("Claim with ID " + claimId + " not found.");
         }
     }
+//    Delete a claim in the system
     private static void deleteClaim(ClaimProcessManager claimProcessManager) {
         System.out.print("Enter the ID of the claim to delete: ");
         String claimId = scanner.nextLine();
@@ -254,7 +278,7 @@ public class Main {
             System.out.println("Claim with ID " + claimId + " not found.");
         }
     }
-
+// Find a specific Claim
     private static void getSingleClaim(ClaimProcessManager claimProcessManager) {
         System.out.print("Enter the ID of the claim to retrieve: ");
         String claimId = scanner.nextLine();
@@ -262,13 +286,93 @@ public class Main {
         if (claim != null) {
             // Display the details of the retrieved claim
             System.out.println("Claim ID: " + claim.getId());
+            System.out.println("Claim Date: " + claim.getClaimDate());
             System.out.println("Claim Status: " + claim.getStatus());
-            // Display other claim details as needed
+            System.out.println("Claim's Insured Person: " + claim.getInsuredPerson());
+            System.out.println("Claim Card Number: " + claim.getCardNumber());
+            System.out.println("Claim's Examination Date: " + claim.getExamDate());
+            System.out.println("Claim Related Document: " + claim.getDocuments());
+            System.out.println("Claim Amount: " + claim.getClaimAmount());
+            System.out.println("Claim Receiver info(Bank-Name-Number): " + claim.getReceiverBank() + " - " + claim.getReceiverName() + " -" + claim.getReceiverNumber());
         } else {
             System.out.println("Claim with ID " + claimId + " not found.");
         }
     }
+//    Add a customer
+    private static void addCustomer() {
+    // Collect customer information
+    System.out.print("Enter customer ID (format: C-#######): ");
+    String id;
+    do {
+        id = scanner.nextLine();
+        if (!id.matches("C-\\d{7}")) {
+            System.out.println("Invalid customer ID format. Please enter in format 'C-#######' with 7 digits.");
+        }
+    } while (!id.matches("C-\\d{7}"));
 
+    System.out.print("Enter full name: ");
+    String fullName = scanner.nextLine();
+
+    System.out.print("Is this customer a policy holder (true/false)? ");
+    boolean isPolicyHolder = Boolean.parseBoolean(scanner.nextLine());
+
+    Customer policyHolder = null;
+    List<Customer> dependents = new ArrayList<>();
+
+    if (!isPolicyHolder) {
+        // If the customer is a dependent, find and associate with the corresponding policy holder
+        System.out.print("Enter policy holder ID: ");
+        String policyHolderId = scanner.nextLine();
+        policyHolder = findCustomerById(policyHolderId);
+        if (policyHolder != null) {
+            dependents.add(new Customer(id, fullName, false, policyHolder, null, new ArrayList<>(), null));
+        } else {
+            System.out.println("Policy holder with ID " + policyHolderId + " not found.");
+            return;
+        }
+    }
+
+    // Generate a random card number (optional, adjust format as needed)
+    String cardNumber = String.format("IC-%08d", new Random().nextInt(Integer.MAX_VALUE));
+
+    // Create the customer object
+    Customer customer = new Customer(id, fullName, isPolicyHolder, policyHolder, cardNumber, dependents, new ArrayList<>());
+
+    // Add the customer
+    customers.add(customer);
+    System.out.println("Customer added successfully.");
+}
+
+    private static void deleteCustomer() {
+        System.out.print("Enter customer ID to delete: ");
+        String id = scanner.nextLine();
+        Customer customerToDelete = findCustomerById(id);
+        if (customerToDelete != null) {
+            customers.remove(customerToDelete);
+            System.out.println("Customer with ID " + id + " deleted successfully.");
+        } else {
+            System.out.println("Customer with ID " + id + " not found.");
+        }
+    }
+
+    private static Customer findCustomerById(String id) {
+        for (Customer customer : customers) {
+            if (customer.getId().equals(id)) {
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    private static Customer findCustomerByName(String name) {
+        for (Customer customer : customers) {
+            if (customer.getFullName().equalsIgnoreCase(name)) {
+                return customer;
+            }
+        }
+        return null;
+    }
+// Retrieve Customers data from database files.
     public static List<Customer> readCustomersFromFile(String filename) {
         List<Customer> customers = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -284,19 +388,19 @@ public class Main {
                 if (!isPolicyHolder) {
                     // If the customer is a dependent, find and associate with the corresponding policy holder
                     String policyHolderId = parts[3];
-                    // Find the policy holder in the existing customer list
+                    // Find the policyholder in the existing customer list
                     for (Customer customer : customers) {
                         if (customer.getId().equals(policyHolderId)) {
                             policyHolder = customer;
                             break;
                         }
                     }
-                    // If policy holder is found, add this customer as a dependent
+                    // If policyholder is found, add this customer as a dependent
                     if (policyHolder != null) {
                         dependents.add(new Customer(id, fullName, false, policyHolder, null, new ArrayList<>(), null));
                     }
                 }
-                // Add the policy holder or dependent to the list of customers
+                // Add the policyholder or dependent to the list of customers
                 customers.add(new Customer(id, fullName, isPolicyHolder, policyHolder, null, dependents, new ArrayList<>()));
             }
         } catch (FileNotFoundException e) {
@@ -306,6 +410,17 @@ public class Main {
         }
         return customers;
     }
+// Method to write customer data to a file
+    public static void writeCustomersToFile(String filename) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+        for (Customer customer : customers) {
+            writer.write(customer.toString() + "\n"); // Use Customer's toString() for data formatting
+        }
+    } catch (IOException e) {
+        System.err.println("Error writing customer data to file: " + e.getMessage());
+    }
+    }
+//    Retrieve Claims data from database files.
     public static List<Claim> readClaimsFromFile(String filename) {
         List<Claim> claims = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -337,6 +452,7 @@ public class Main {
         }
         return claims;
     }
+//    Insert updated, new Claim data in the database files.
     public static void writeClaimsToFile(String filename, List<Claim> claims) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (Claim claim : claims) {

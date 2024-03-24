@@ -36,6 +36,10 @@ public class Customer {
         return cardNumber;
     }
 
+    public List<Customer> getDependents() {
+        return dependents;
+    }
+
     public List<Claim> getClaims() {
         return claims;
     }

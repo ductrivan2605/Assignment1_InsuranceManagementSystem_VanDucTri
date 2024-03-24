@@ -342,7 +342,6 @@ public class Main {
     customers.add(customer);
     System.out.println("Customer added successfully.");
 }
-
     private static void deleteCustomer() {
         System.out.print("Enter customer ID to delete: ");
         String id = scanner.nextLine();
@@ -354,8 +353,8 @@ public class Main {
             System.out.println("Customer with ID " + id + " not found.");
         }
     }
-
     private static Customer findCustomerById(String id) {
+        readCustomersFromFile("data/customers.dat"); // Load customers from file
         for (Customer customer : customers) {
             if (customer.getId().equals(id)) {
                 return customer;
@@ -363,8 +362,8 @@ public class Main {
         }
         return null;
     }
-
     private static Customer findCustomerByName(String name) {
+        readCustomersFromFile("data/customers.dat"); // Load customers from file
         for (Customer customer : customers) {
             if (customer.getFullName().equalsIgnoreCase(name)) {
                 return customer;

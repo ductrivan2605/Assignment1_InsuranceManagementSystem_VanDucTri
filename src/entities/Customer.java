@@ -8,13 +8,19 @@ public class Customer {
 // Every Customer has an ID, name, unique insurance card and list of claims
     private String id;
     private String fullName;
-    private InsuranceCard insuranceCard;
+    private boolean isPolicyHolder;
+    private Customer policyHolder;
+    private String cardNumber;
+    private List<Customer> dependents;
     private List<Claim> claims;
 //    Constructor
-    public Customer(String id, String fullName, InsuranceCard insuranceCard, List<Claim> claims) {
+    public Customer(String id, String fullName, boolean isPolicyHolder, Customer policyHolder, String cardNumber, List<Customer> dependents, List<Claim> claims) {
         this.id = id;
         this.fullName = fullName;
-        this.insuranceCard = insuranceCard;
+        this.cardNumber = InsuranceCard.getCardNumber();
+        this.isPolicyHolder = isPolicyHolder;
+        this.policyHolder = policyHolder;
+        this.dependents = dependents;
         this.claims = claims;
     }
 //    Getter for Customer class
@@ -26,8 +32,8 @@ public class Customer {
         return fullName;
     }
 
-    public InsuranceCard getInsuranceCard() {
-        return insuranceCard;
+    public String getCardNumber() {
+        return cardNumber;
     }
 
     public List<Claim> getClaims() {
@@ -46,8 +52,8 @@ public class Customer {
         this.fullName = fullName;
     }
 
-    public void setInsuranceCard(InsuranceCard insuranceCard) {
-        this.insuranceCard = insuranceCard;
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
     }
 
     public void setClaims(List<Claim> claims) {
@@ -55,6 +61,18 @@ public class Customer {
     }
     @Override
     public String toString() {
-        return "ID: " + id + "\n" + "Full Name: " + fullName + "\n" + "Insurance Card: " + insuranceCard + "\n" + "Claims: " + claims.size();
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("Full Name: ").append(fullName).append("\n");
+        sb.append("Insurance Card Number: ").append(cardNumber).append("\n");
+        if (isPolicyHolder) {
+            sb.append("Policy Holder: Yes\n");
+        } else {
+            sb.append("Policy Holder: No\n");
+            sb.append("Policy Holder ID: ").append(policyHolder.getId()).append("\n");
+        }
+        sb.append("Dependents: ").append(dependents.size()).append("\n");
+        sb.append("Claims: ").append(claims.size());
+        return sb.toString();
     }
 }

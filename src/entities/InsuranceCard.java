@@ -4,7 +4,7 @@
 package entities;
 import java.util.Date;
 public class InsuranceCard{
-    String cardNumber;
+    static String cardNumber;
     String cardHolder;
     String policyOwner;
     Date expirationDate;
@@ -18,7 +18,7 @@ public class InsuranceCard{
         this.isAssigned = true; // Insurance Card is assigned by default
     }
 
-    public String getCardNumber() {
+    public static String getCardNumber() {
         return cardNumber;
     }
 

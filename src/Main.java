@@ -93,9 +93,6 @@ public class Main {
                     System.out.println("Invalid choice. Please try again.");
             }
         }
-        // Update files before exiting
-        writeClaimsToFile("data/claims.txt", claimProcessManager.getAll());
-        writeCustomersToFile("data/customers.dat");
     }
 
     public static Date parseDate(String dateStr) {
@@ -117,7 +114,7 @@ public class Main {
         System.out.println("Adding a new claim...");
 
         // Collect claim information
-        System.out.print("Enter claim ID: ");
+        System.out.print("Enter claim ID(F-******** format): ");
         String id = scanner.nextLine();
 
         System.out.print("Enter claim date (DD-MM-YYYY): ");
@@ -168,7 +165,7 @@ public class Main {
 
         // Add the new claim
         claimProcessManager.add(newClaim);
-
+        writeClaimsToFile("data/claims.txt", claimProcessManager.getAll());
         System.out.println("New claim added successfully.");
     }
 //    Method that let user view all Claims stored in the database
@@ -340,6 +337,7 @@ public class Main {
 
     // Add the customer
     customers.add(customer);
+    writeCustomersToFile("data/customers.txt");
     System.out.println("Customer added successfully.");
 }
     private static void deleteCustomer() {
